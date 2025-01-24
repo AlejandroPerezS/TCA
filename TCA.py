@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
 import os
-
+from data import ameegoData
 # Path to the Chrome WebDriver (relative path)
 webdriver_path = os.path.join('chromedriver-win64', 'chromedriver.exe')
 # Set up the Chrome WebDriver service
