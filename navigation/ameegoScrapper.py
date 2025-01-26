@@ -1,3 +1,4 @@
+from datetime import date
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
@@ -37,8 +38,15 @@ def ameegoScrap():
     sign_in_button = driver.find_element('css selector', 'button[type="submit"]')
     sign_in_button.click()
     
-    # listen for a key press, if i press shift + q it will run driver.quit()
+    # prints a console message tht will run driver.quit() if q is entered
+    ###########################################################################
+    # TODO
+    # use driver.get('https://c.myameego.com/manager/payroll-export/')
+    # get the current date
+    # Returns the current local date
+    today = date.today()
+    print("Today date is: ", today)
     
-    # Close the browser
-    driver.quit()
+    
+    
 
