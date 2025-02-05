@@ -81,22 +81,17 @@ def ameegoScrap():
         lenght = df.loc[i]['Length']
         #if the calculation is negative then that means its a midnight shift(this is how i will handle it for now)
         if fullShift < 0:
-            breakTime = fullShift/2 + lenght
-            # Convert breaktime to positive
-            breakTime = abs(breakTime)
+            fullShift = 24 - df.loc[i]['Start'] + df.loc[i]['End']
+            breakTime = fullShift - lenght
+            
         else:
             breakTime = fullShift - lenght
             
-        print(fullShift)
-        print(lenght)
-        print(breakTime)
+
         if lenght >= 5.5 and breakTime != 0.5 :
             print(df.loc[i]['name'] + " has a shift of more hours than 5 so please add break")
-        print(df.loc[i])
+            print(df.loc[i])
 
-    
-    
-    
     # gets an input from the user tht will run driver.quit() if q is entered
     quit = input("press q to quit")
     if quit == 'q':
