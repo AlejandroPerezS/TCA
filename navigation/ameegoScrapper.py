@@ -3,8 +3,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
 import os
+from functions import functions
 import constants
+from selenium.webdriver.common.by import By
 import time
+from time import sleep
 from datetime import timedelta
 import pandas as pd
 def ameegoScrap():
@@ -40,9 +43,9 @@ def ameegoScrap():
     # Find the sign in button
     sign_in_button = driver.find_element('css selector', 'button[type="submit"]')
     sign_in_button.click()
-    time.sleep(5)
+    time.sleep(1)
     # uses driver.get to navigate tot he time sheet for the day
-    driver.get('https://c.myameego.com/manager/time-and-attendance.php?date='+str(date.today() - timedelta(days=1)))
+    driver.get('https://c.myameego.com/manager/time-and-attendance.php?date='+str(date.today() - timedelta(days=2)))
 
     # the site saves all the schedule data in a table so we find the table and get the info from it
     table = driver.find_element('css selector', 'table')
@@ -67,10 +70,11 @@ def ameegoScrap():
             start_time, end_time = start_end.split('-')
             # Store the data in the dictionary
             schedule_data[name] = [name, wage, start_time, end_time, length, overtime, weekly_overtime, cost]
-
-          
+           
+    
     # Convert the dictionary to a DataFrame
     df = pd.DataFrame.from_dict(schedule_data, orient='index', columns=['name', 'Wage', 'Start', 'End', 'Length', 'Overtime', 'Weekly Overtime', 'Cost'])
+
     # Convert 'Length' column to float hours
     df['Length'] = df['Length'].apply(lambda x: float(x.split()[0]) if isinstance(x, str) else x)
     df['Start'] = df['Start'].apply(lambda x: float(x.split(':')[0]) % 12 + (12 if 'pm' in x.lower() else 0) + float(x.split(':')[1][:2]) / 60)
@@ -91,6 +95,42 @@ def ameegoScrap():
         if lenght >= 5.5 and breakTime != 0.5 :
             print(df.loc[i]['name'] + " has a shift of more hours than 5 so please add break")
             print(df.loc[i])
+            # Find the row containing the name
+            row_element = driver.find_element('xpath', f"//tr[td[contains(text(), '{df.loc[i]['name']}')]]")
+            # Find the link in the same row with class 'text-center link hidden-print'
+            link_element = row_element.find_element('tag name', 'i')
+            link_element.click()
+            # Wait for the popup to appear and find the edit link
+            sleep(1)
+            edit_link = driver.find_element(By.CSS_SELECTOR, 'a.link.small')
+            edit_link.click()
+            sleep(1)
+            time_in = driver.find_element(By.CSS_SELECTOR,  'input[name="adj_break[in_time]"]').get_attribute('value')
+            time_out = driver.find_element(By.CSS_SELECTOR, 'input[name="adj_break[out_time]"]').get_attribute('value')
+            time_in = float(time_in.split(':')[0]) + float(time_in.split(':')[1][:2]) / 60
+            time_out = float(time_out.split(':')[0]) + float(time_out.split(':')[1][:2]) / 60
+            break_total = time_out - time_in
+            if break_total != 0.5:
+                print('Break time is not 30 minutes')
+                if break_total < 0.5:
+                    print('Break time is less than 30 minutes')
+                    break_end = driver.find_element(By.CSS_SELECTOR, 'input[name="adj_break[out_time]"]')
+                    print(break_total)
+                    print(time_out)
+                    time_out = time_out + (0.5 - break_total)
+                    break_end.clear()
+                    time_out = functions.convert_to_am_pm(time_out)
+                    break_end.send_keys(time_out)
+                    break_end.send_keys('\n')
+                    driver.find_element(By.CSS_SELECTOR, 'input[name="submit"]').click()
+                    sleep(0.5)
+                    driver.find_element(By.CSS_SELECTOR, 'input[name="submit"]').click()
+                elif break_total > 0.5:
+                    print('Break time is more than 30 minutes') 
+                else:
+                    print('Break time is correct you shouldnt be seeing this')
+                
+            
 
     # gets an input from the user tht will run driver.quit() if q is entered
     quit = input("press q to quit")

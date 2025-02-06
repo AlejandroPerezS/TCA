@@ -1,4 +1,3 @@
-
 AMEEGO_USER = "AlejandroP"
 AMEEGO_PASS = "1597"
 AMEEGO_ID = "103293"
