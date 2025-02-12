@@ -92,9 +92,8 @@ def ameegoScrap():
             breakTime = fullShift - lenght
             
 
-        if lenght >= 5.5 and breakTime != 0.5 :
-            print(df.loc[i]['name'] + " has a shift of more hours than 5 so please add break")
-            print(df.loc[i])
+        if lenght >= 5.5 and breakTime != 0.5 and df.loc[i]['name'] != 'MichaelH':
+            print(df.loc[i]['name'])
             # Find the row containing the name
             row_element = driver.find_element('xpath', f"//tr[td[contains(text(), '{df.loc[i]['name']}')]]")
             # Find the link in the same row with class 'text-center link hidden-print'
@@ -102,31 +101,32 @@ def ameegoScrap():
             link_element.click()
             # Wait for the popup to appear and find the edit link
             sleep(1)
+            
+            edit_links = driver.find_elements(By.CSS_SELECTOR, 'a.link.small')
+            if len(edit_links)>1:
+                edit_links[0].click()
+                sleep(0.5)
+                # Click the button after opening the first link
+                button = driver.find_element(By.CSS_SELECTOR, 'button[data-ajax*="time-and-attendance.edit.break.php"][class*="btn-danger"]')
+                button.click()
+                sleep(0.5)
             edit_link = driver.find_element(By.CSS_SELECTOR, 'a.link.small')
             edit_link.click()
-            sleep(1)
+            sleep(0.5)
             time_in = driver.find_element(By.CSS_SELECTOR,  'input[name="adj_break[in_time]"]').get_attribute('value')
             time_out = driver.find_element(By.CSS_SELECTOR, 'input[name="adj_break[out_time]"]').get_attribute('value')
             time_in = float(time_in.split(':')[0]) + float(time_in.split(':')[1][:2]) / 60
             time_out = float(time_out.split(':')[0]) + float(time_out.split(':')[1][:2]) / 60
             break_total = time_out - time_in
             if break_total != 0.5:
-                print('Break time is not 30 minutes')
                 if break_total < 0.5:
                     print('Break time is less than 30 minutes')
-                    break_end = driver.find_element(By.CSS_SELECTOR, 'input[name="adj_break[out_time]"]')
-                    print(break_total)
-                    print(time_out)
-                    time_out = time_out + (0.5 - break_total)
-                    break_end.clear()
-                    time_out = functions.convert_to_am_pm(time_out)
-                    break_end.send_keys(time_out)
-                    break_end.send_keys('\n')
-                    driver.find_element(By.CSS_SELECTOR, 'input[name="submit"]').click()
-                    sleep(0.5)
-                    driver.find_element(By.CSS_SELECTOR, 'input[name="submit"]').click()
+                    
+                    # Call the function to adjust the break time
+                    functions.adjust_break_time(driver, time_in)
                 elif break_total > 0.5:
-                    print('Break time is more than 30 minutes') 
+                    print('Break time is more than 30 minutes')  
+                    functions.adjust_break_time(driver, time_in)
                 else:
                     print('Break time is correct you shouldnt be seeing this')
                 
