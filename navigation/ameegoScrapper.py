@@ -45,7 +45,7 @@ def ameegoScrap():
     sign_in_button.click()
     time.sleep(1)
     # uses driver.get to navigate tot he time sheet for the day
-    driver.get('https://c.myameego.com/manager/time-and-attendance.php?date='+str(date.today() - timedelta(days=2)))
+    driver.get('https://c.myameego.com/manager/time-and-attendance.php?date='+str(date.today() - timedelta(days=1)))
 
     # the site saves all the schedule data in a table so we find the table and get the info from it
     table = driver.find_element('css selector', 'table')
