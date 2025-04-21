@@ -43,17 +43,18 @@ def clearviewScrap():
     # Iterate through the rows and extract the data
     for row in rows[1:]:  # Skip the header row
         cells = row.find_elements('tag name', 'td')
-        # Extract the data from the cells, skipping the 'type' cell (index 2)
-        employee = cells[0].text
-        job_type = cells[1].text
-        time_in = cells[3].text  # Skip index 2
-        time_out = cells[4].text
-        payable_hours = cells[5].text
-        flags = cells[6].text
+        employee = cells[1].text
+        job = cells[2].text
+        type = cells[3].text
+        time_in = cells[4].text  # Skip index 2
+        time_out = cells[5].text
+        payable_hours = cells[6].text
+        flags = cells[7].text
         
         # Store the data in the dictionary
         time_card_data[employee] = {
-            'Job Type': job_type,
+            'Job': job,
+            'Type': type,
             'Time In': time_in,
             'Time Out': time_out,
             'Payable Hours': payable_hours,

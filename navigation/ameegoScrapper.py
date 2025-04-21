@@ -10,6 +10,9 @@ import time
 from time import sleep
 from datetime import timedelta
 import pandas as pd
+from webdriver_manager.chrome import ChromeDriverManager
+
+
 def ameegoScrap():
     # Path to the Chrome WebDriver (relative path)
     webdriver_path = os.path.join('chromedriver-win64', 'chromedriver.exe')
@@ -19,7 +22,7 @@ def ameegoScrap():
     # Set Chrome options
     options = Options()
     options.add_argument('--start-maximized')
-
+    
     # Initialize the Chrome WebDriver
     driver = webdriver.Chrome(service=service, options=options)
 

@@ -4,6 +4,7 @@ from data import ameegoData
 from navigation import clearviewScrapper, ameegoScrapper
 import tkinter as tk
 
+
 # Function to close the application
 def close_app():
     # Close the drivers if they are running
